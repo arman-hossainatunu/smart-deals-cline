@@ -7,6 +7,7 @@ import Login from "../Pages/Login";
 import MyProducts from "../Pages/MyProducts";
 import MyBids from "../Pages/MyBids";
 import CreateProduct from "../Pages/CreateProduct";
+import ProductsDetails from "../Components/ProductsDetails";
 
 const router = createBrowserRouter([
   {
@@ -16,12 +17,17 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: Home,
-        loader:()=>fetch("http://localhost:3000/products")
-        
+        loader: () => fetch("http://localhost:3000/products-latest"),
       },
       {
         path: "allProducts",
         Component: AllProducts,
+        loader: () => fetch("http://localhost:3000/products"),
+      },
+      {
+        path: "/details/:_id",
+        Component: ProductsDetails,
+         loader: () => fetch("http://localhost:3000/products")
       },
       {
         path: "myProducts",

@@ -17,15 +17,65 @@ const CreateProduct = () => {
     description: "",
   });
 
+  // Categories state (dynamic)
+  const [categories, setCategories] = useState([
+    "toys",
+    "clothes",
+    "accessories",
+    "others",
+  ]);
+
+  const [newCategory, setNewCategory] = useState("");
+
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  // Add new category
+  const handleAddCategory = () => {
+    if (newCategory.trim() && !categories.includes(newCategory.trim())) {
+      setCategories([...categories, newCategory.trim()]);
+      setFormData({ ...formData, category: newCategory.trim() });
+      setNewCategory("");
+    }
+  };
+
+  // Submit form
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    alert("✅ Product Created Successfully!");
+
+    try {
+      const response = await fetch("http://localhost:3000/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      console.log("✅ Product Added:", data);
+      alert("✅ Product Created Successfully!");
+
+      // Reset form
+      setFormData({
+        title: "",
+        category: "",
+        minPrice: "",
+        maxPrice: "",
+        condition: "Brand New",
+        usageTime: "",
+        image: "",
+        sellerName: "",
+        sellerEmail: "",
+        sellerContact: "",
+        sellerImage: "",
+        location: "",
+        description: "",
+      });
+    } catch (error) {
+      console.error("❌ Error:", error);
+      alert("❌ Failed to create product!");
+    }
   };
 
   return (
@@ -35,63 +85,77 @@ const CreateProduct = () => {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Title & Category */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Title</label>
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Title</label>
+          <input
+            type="text"
+            name="title"
+            placeholder="e.g. Yamaha Fz Guitar for Sale"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+            required
+          />
+        </div>
+
+        {/* Category with Dynamic Add */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Category</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+            required
+          >
+            <option value="">Select a Category</option>
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </option>
+            ))}
+          </select>
+
+          <div className="mt-2 flex gap-2">
             <input
               type="text"
-              name="title"
-              placeholder="e.g. Yamaha Fz Guitar for Sale"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+              placeholder="Add new category"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              className="border rounded-lg px-3 py-2 flex-1 focus:ring-2 focus:ring-purple-500 outline-none"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Category</label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+            <button
+              type="button"
+              onClick={handleAddCategory}
+              className="bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700"
             >
-              <option value="">Select a Category</option>
-              <option value="toys">Toys</option>
-              <option value="clothes">Clothes</option>
-              <option value="accessories">Accessories</option>
-              <option value="others">Others</option>
-            </select>
+              Add
+            </button>
           </div>
         </div>
 
         {/* Price */}
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Min Price You Want to Sale ($)
-            </label>
+            <label className="block text-sm font-medium mb-1">Min Price ($)</label>
             <input
               type="number"
               name="minPrice"
-              placeholder="e.g. 18.5"
               value={formData.minPrice}
               onChange={handleChange}
+              placeholder="Min Price"
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Max Price You Want to Sale ($)
-            </label>
+            <label className="block text-sm font-medium mb-1">Max Price ($)</label>
             <input
               type="number"
               name="maxPrice"
-              placeholder="Optional (default = Min Price)"
               value={formData.maxPrice}
               onChange={handleChange}
+              placeholder="max Price"
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
             />
           </div>
@@ -100,9 +164,7 @@ const CreateProduct = () => {
         {/* Condition & Usage */}
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Product Condition
-            </label>
+            <label className="block text-sm font-medium mb-1">Condition</label>
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2">
                 <input
@@ -128,13 +190,11 @@ const CreateProduct = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Product Usage Time
-            </label>
+            <label className="block text-sm font-medium mb-1">Usage Time</label>
             <input
               type="text"
               name="usageTime"
-              placeholder="e.g. 1 year 3 months"
+              placeholder="Product use time"
               value={formData.usageTime}
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -144,15 +204,13 @@ const CreateProduct = () => {
 
         {/* Image URL */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Product Image URL
-          </label>
+          <label className="block text-sm font-medium mb-1">Image URL</label>
           <input
             type="text"
             name="image"
-            placeholder="https://..."
             value={formData.image}
             onChange={handleChange}
+            placeholder="Image URL"
             className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
           />
         </div>
@@ -160,29 +218,26 @@ const CreateProduct = () => {
         {/* Seller Info */}
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Seller Name
-            </label>
+            <label className="block text-sm font-medium mb-1">Seller Name</label>
             <input
               type="text"
               name="sellerName"
-              placeholder="e.g. Artisan Roasters"
+              placeholder="Seller Name"
+              required
               value={formData.sellerName}
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Seller Email
-            </label>
+            <label className="block text-sm font-medium mb-1">Seller Email</label>
             <input
               type="email"
               name="sellerEmail"
-              placeholder="e.g. user@email.com"
+              required
               value={formData.sellerEmail}
               onChange={handleChange}
+               placeholder="Seller Email"
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
             />
           </div>
@@ -190,27 +245,23 @@ const CreateProduct = () => {
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Seller Contact
-            </label>
+            <label className="block text-sm font-medium mb-1">Seller Contact</label>
             <input
               type="text"
               name="sellerContact"
-              placeholder="+8801XXXXXXXXX"
+              required
+                placeholder="+8801XXXXXXXXX"
               value={formData.sellerContact}
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Seller Image URL
-            </label>
+            <label className="block text-sm font-medium mb-1">Seller Image URL</label>
             <input
               type="text"
               name="sellerImage"
-              placeholder="https://..."
+               placeholder="https://..."
               value={formData.sellerImage}
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -224,7 +275,7 @@ const CreateProduct = () => {
           <input
             type="text"
             name="location"
-            placeholder="City, Country"
+                placeholder="City, Country"
             value={formData.location}
             onChange={handleChange}
             className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -233,20 +284,18 @@ const CreateProduct = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Simple Description about your Product
-          </label>
+          <label className="block text-sm font-medium mb-1">Description</label>
           <textarea
             name="description"
             rows="3"
-            placeholder="Write a short description..."
+             placeholder="Write a short description..."
             value={formData.description}
             onChange={handleChange}
             className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
           />
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <button
           type="submit"
           className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition"

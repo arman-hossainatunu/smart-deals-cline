@@ -9,7 +9,6 @@ const Register = () => {
     googleWithLogin()
       .then((result) => {
         const user = result.user;
-        console.log(user);
         const newUser = {
           name: user.displayName,
           email: user.email,

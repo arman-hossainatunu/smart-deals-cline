@@ -27,9 +27,11 @@ const Home = () => {
           </div>
         </div>
       </div>
-      {data.map((item) => (
-        <ProductCard key={item._id} item={item}></ProductCard>
-      ))}
+      <div className="max-w-11/12 mx-auto text-center grid gap-5 grid-cols-3">
+        {data.map((item) => (
+          <ProductCard key={item._id} item={item}></ProductCard>
+        ))}
+      </div>
     </div>
   );
 };
