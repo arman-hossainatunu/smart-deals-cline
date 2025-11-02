@@ -1,6 +1,35 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AuthContext } from "../Context/AuthContext";
+import { useNavigate } from "react-router";
 
 const Register = () => {
+  const { googleWithLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const handelGoogle = () => {
+    googleWithLogin()
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        const newUser = {
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        };
+        fetch("http://localhost:3000/users", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        })
+          .then((res) => res.json())
+          .then((data) => console.log("data after user save", data));
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <div className="card my-10 mx-auto mt-20 bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
       <h1 className="text-4xl text-center font-bold">Register now!</h1>
@@ -21,7 +50,10 @@ const Register = () => {
           <button className="btn btn-neutral mt-4">Login</button>
         </fieldset>
       </form>
-      <button className="btn bg-white mx-5 text-black border-[#e5e5e5]">
+      <button
+        onClick={handelGoogle}
+        className="btn bg-white mx-5 text-black border-[#e5e5e5]"
+      >
         <svg
           aria-label="Google logo"
           width="16"

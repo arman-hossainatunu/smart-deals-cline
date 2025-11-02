@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router";
+import { AuthContext } from "../Context/AuthContext";
 
 const Navbar = () => {
+  const { user, logOut } = useContext(AuthContext);
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {})
+      .catch((error) => console.log(error));
+  };
   return (
     <div className="fixed w-full top-0 z-50  bg-base-100 shadow-sm">
       <div className="navbar max-w-11/12 mx-auto">
@@ -33,15 +41,19 @@ const Navbar = () => {
               <li>
                 <Link to="/allProducts">All Products</Link>
               </li>
-              <li>
-                <Link to="/myProducts">My Products</Link>
-              </li>
-              <li>
-                <Link to="/myBids">My Bids</Link>
-              </li>
-              <li>
-                <Link to="/createProduct">Create Product</Link>
-              </li>
+              {user && (
+                <>
+                  <li>
+                    <Link to="/myProducts">My Products</Link>
+                  </li>
+                  <li>
+                    <Link to="/myBids">My Bids</Link>
+                  </li>
+                  <li>
+                    <Link to="/createProduct">Create Product</Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
           <a className="btn-ghost text-xl">daisyUI</a>
@@ -54,50 +66,51 @@ const Navbar = () => {
             <li>
               <Link to="/allProducts">All Products</Link>
             </li>
-            <li>
-              <Link to="/myProducts">My Products</Link>
-            </li>
-            <li>
-              <Link to="/myBids">My Bids</Link>
-            </li>
-            <li>
-              <Link to="/createProduct">Create Product</Link>
-            </li>
+            {user && (
+              <>
+                <li>
+                  <Link to="/myProducts">My Products</Link>
+                </li>
+                <li>
+                  <Link to="/myBids">My Bids</Link>
+                </li>
+                <li>
+                  <Link to="/createProduct">Create Product</Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
         <div className="navbar-end">
-          <Link className="btn" to="/login">Login</Link>
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
+          {user ? (
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <div className="w-10 rounded-full">
+                  <img alt="user image" src={user.photoURL} />
+                </div>
               </div>
+              <ul
+                tabIndex="-1"
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+              >
+                <li>{user.displayName}</li>
+                <li>
+                  <a>Settings</a>
+                </li>
+                <li>
+                  <a onClick={handleLogOut}>Logout</a>
+                </li>
+              </ul>
             </div>
-            <ul
-              tabIndex="-1"
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-            >
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
+          ) : (
+            <Link to="/login" className="btn btn-primary">
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </div>

@@ -1,8 +1,12 @@
 import React from "react";
+import { useLoaderData } from "react-router";
+import ProductCard from "../Components/ProductCard";
 
 const Home = () => {
+  const data = useLoaderData();
+  console.log(data);
   return (
-    <div className="mt-[65px]">
+    <div className="mt-[10px]">
       <div
         className="hero min-h-screen"
         style={{
@@ -23,6 +27,9 @@ const Home = () => {
           </div>
         </div>
       </div>
+      {data.map((item) => (
+        <ProductCard key={item._id} item={item}></ProductCard>
+      ))}
     </div>
   );
 };
