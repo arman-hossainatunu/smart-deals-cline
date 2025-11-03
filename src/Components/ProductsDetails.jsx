@@ -1,4 +1,4 @@
-import { useLoaderData, useParams } from "react-router";
+import { Link, useLoaderData, useNavigate, useParams } from "react-router";
 
 const ProductsDetails = () => {
   const { _id } = useParams();
@@ -6,6 +6,7 @@ const ProductsDetails = () => {
   console.log(products);
   const product = products.find((item) => item._id === _id);
   console.log("get product", product);
+  const navigate = useNavigate();
   //   if (loading) return <div>Loading...</div>;
   //   if (!product) return <div>Product not found.</div>;
 
@@ -28,14 +29,22 @@ const ProductsDetails = () => {
       <p className="mb-2">Location: {product.location}</p>
       <div className="flex items-center gap-2 mt-4">
         <img
-          src={product.seller_image}
+          src={product.sellerImage}
           alt={product.seller_name}
           className="w-10 h-10 rounded-full"
         />
         <div>
-          <p className="font-semibold">{product.sellerName}</p>
-          <p>Contact: {product.sellerEmail}</p>
-          <p>Contact: {product.sellerContact}</p>
+          <div>
+            <p className="font-semibold">{product.sellerName}</p>
+            <p>Contact: {product.sellerEmail}</p>
+            <p>Contact: {product.sellerContact}</p>
+          </div>
+          <div className="flex gap-2 mt-2">
+             <button className="btn" onClick={() => navigate(`/update/${product._id}`)}>
+            Update
+        </button>
+            <button className="btn">Delete</button>
+          </div>
         </div>
       </div>
     </div>

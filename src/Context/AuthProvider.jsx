@@ -58,7 +58,7 @@ const AuthProvider = ({ children }) => {
     googleWithLogin,
     logOut,
   };
-
+ 
   // ✅ Correct Provider usage
   return (
     <AuthContext value={authInfo}>{children}</AuthContext>

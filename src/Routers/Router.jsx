@@ -8,6 +8,8 @@ import MyProducts from "../Pages/MyProducts";
 import MyBids from "../Pages/MyBids";
 import CreateProduct from "../Pages/CreateProduct";
 import ProductsDetails from "../Components/ProductsDetails";
+import PrivateRoute from "../Context/PrivateRoute";
+import Update from "../Components/Update";
 
 const router = createBrowserRouter([
   {
@@ -26,8 +28,22 @@ const router = createBrowserRouter([
       },
       {
         path: "/details/:_id",
-        Component: ProductsDetails,
-         loader: () => fetch("http://localhost:3000/products")
+        element: (
+          <PrivateRoute>
+            {" "}
+            <ProductsDetails></ProductsDetails>{" "}
+          </PrivateRoute>
+        ),
+        loader: () => fetch("http://localhost:3000/products"),
+      },
+      {
+        path: "/update/:_id",
+        element: (
+          <PrivateRoute>
+            <Update></Update>
+          </PrivateRoute>
+        ),
+        loader: () => fetch("http://localhost:3000/products"),
       },
       {
         path: "myProducts",
